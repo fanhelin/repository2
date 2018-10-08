@@ -21,7 +21,7 @@ import com.wx.entity.sys.User;
 /**
  * controller基类，controller的基本方法可以写在该类，子controller继承该类。 继承日志功能和功共方法。
  * 
- * @author fhr
+ * @author fh
  */
 
 public class BaseController {
