@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.payment.PaymentMapper">
+
+  <select id="findPaymentTotal" parameterType="Map" resultType ="int" >
+    select count(1) from t_payment pn
+	<where>
+	    <if test="startTime != null and startTime != ''">
+	         and pn.time_end &gt;= #{startTime}
+	    </if>
+	    <if test="endTime != null and endTime != ''">
+	         and pn.time_end &lt; #{endTime}
+	    </if>
+	    <if test="mobile != null and mobile != ''">
+	         and pn.mobile = #{mobile}
+	    </if>
+	</where>
+  </select> 
+  
+  <select id="findPaymentList" parameterType="Map" resultType ="WxPayment" >
+    select * from t_payment pn
+	<where>
+	    1=1
+	    <if test="startTime != null and startTime != ''">
+	         and pn.time_end &gt;= #{startTime}
+	    </if>
+	    <if test="endTime != null and endTime != ''">
+	         and pn.time_end  &lt; #{endTime}
+	    </if>
+	    <if test="mobile != null and mobile != ''">
+	         and pn.mobile = #{mobile}
+	    </if>
+	        limit #{currentLine},#{rows}
+	</where>
+  </select> 
+  
+  <insert id="addPayment" parameterType="NotifyInfo">
+  
+    insert into t_payment(appid ,bank_type ,cash_fee ,fee_type ,is_subscribe ,mch_id ,nonce_str ,openid ,out_trade_no ,
+     result_code , return_code ,sign ,time_end ,total_fee ,trade_type ,transaction_id ) 
+     values(#{appid} ,#{bank_type} , CAST(#{cash_fee} AS UNSIGNED INTEGER) ,#{fee_type} ,#{is_subscribe} ,#{mch_id} ,#{nonce_str} ,#{openid} ,#{out_trade_no},
+     #{result_code}, #{return_code} ,#{sign} ,#{time_end} , CAST(#{total_fee} AS UNSIGNED INTEGER) ,#{trade_type} ,#{transaction_id} ) 
+
+  </insert>
+</mapper>

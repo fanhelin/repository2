@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.sys.UserMapper">
+    
+
+    
+    <select id="selectUser" parameterType="User" resultType="User" >
+       select u.* ,r.right_mask from t_user u 
+		LEFT JOIN t_role r ON u.role_code = r.role_code
+	
+        where u.user_code = #{user_code} and u.password = #{password}
+    </select>
+    
+    <select id="selectUserByUser" parameterType="User" resultType="User" >
+           select u.* ,r.right_mask from t_user u 
+		   LEFT JOIN t_role r ON u.role_code = r.role_code
+		 
+         <where>
+            <if test="user_code != null">
+            	 u.user_code = #{user_code}
+            </if>
+            
+            <if test="bus_state != null ">
+            	 and u.bus_state = #{bus_state}
+            </if>
+            
+            
+        </where> 
+    </select>
+
+    <select id="queryUsers" parameterType="User" resultType="User" >
+        select t.* ,
+        (select t2.username from t_users t2  where t.create_user_id = t2.id ) as create_user_name,
+        (select t3.staff_name from t_staffs t3 where t.staff_id = t3.id) as staff_name 
+        from T_USERS t
+         <where>
+           <if test="id != null">
+            	and t.ID != #{id}
+            </if>
+         
+            <if test="username != null">
+            	and t.USERNAME LIKE concat(concat('%',#{username}),'%')
+            </if>
+            
+            <if test="is_use != null">
+            	 and t.IS_USE = #{is_use}
+            </if>
+            
+             <if test="entity_id != null and entity_id != ''">
+            	 and t.ENTITY_ID = #{entity_id}
+            </if>  
+        </where> 
+    </select>
+  
+    <insert id="insertUser" parameterType="User">
+        insert into T_USERS(ID , entity_id,STAFF_ID , USER_CODE,USERNAME, PASSWORD, MOBILE, EMAIL, CREATE_USER_ID, CREATE_DATE,IS_USE,LAST_UPDATE_USER_ID,LAST_UPDATE_DATE)
+        values(T_USERS_SEQ.NEXTVAL,#{entity_id} ,#{staff_id}, concat(#{code_prefix},T_USERS_SEQ.NEXTVAL) , #{username}, #{password}, #{mobile}, #{email}, #{create_user_id}, to_date(#{create_date},'yyyy-mm-dd'), #{is_use},#{last_update_user_id},to_date(#{last_update_date},'yyyy-mm-dd'))
+    </insert>
+	
+    <update id="updateUser" parameterType="User">
+       update T_USER
+        <trim prefix="set" suffixOverrides=",">
+	       
+	        <if test="user_name !=null">user_name = #{user_name},</if>
+	        <if test="password !=null">password = #{password},</if>
+	        <if test="phone !=null">phone = #{phone},</if>
+
+	        <if test="bus_state !=null">bus_state = #{bus_state},</if>
+	        <if test="login_state !=null">login_state = #{login_state},</if>
+	     </trim>
+	     <where>
+		      <if test="id != null">
+		      	 ID = #{id}
+		      </if>
+		      
+	          <if test="user_code != null">
+	           	 and USER_CODE = #{user_code}
+	          </if>
+	      </where>
+	     
+    </update>
+    
+     <select id="queryGroups"  parameterType="com.wx.entity.sys.UserGroup" resultType="com.wx.entity.sys.Group">
+       select * from t_group where group_code in( 
+       		select group_code from t_user_group ug 
+       		<where>
+       		  <if test="user_code != null">
+       		     ug.user_code = #{user_code}
+       		  </if>
+       		</where> 
+       );
+    </select>
+    
+    <select id="selectAppInfos"  parameterType="com.wx.entity.sys.AppInfo" resultType="com.wx.entity.sys.AppInfo">
+      select * from t_app_info ai where ai.group_code = #{group_code} ;
+    </select>
+    
+  
+    
+</mapper>

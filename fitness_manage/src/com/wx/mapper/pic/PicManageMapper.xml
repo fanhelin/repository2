@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.pic.PicManageMapper">
+
+  <select id="selectPictures" parameterType="ImageInfo" resultType ="ImageInfo" >
+    select ii.* , CONCAT_WS('?d=' ,CONCAT_WS('/' , ai.img_fold , ai.app_type , ai.app_id , ii.img_name ),ii.seq_id) as path
+	from t_img_info ii 
+	left join t_app_info ai on ai.app_info_code = ii.app_info_code 
+	where ii.app_info_code= #{app_info_code} ORDER BY id desc ;
+  </select> 
+  
+  
+  <insert id="addPicture" parameterType="ImageInfo"  >
+    insert into t_img_info(img_code ,img_name ,app_info_code ,des ,exe_name ,width ,height )values(
+       #{img_code} ,
+       #{img_name} ,
+       #{app_info_code},
+       #{des},
+       #{exe_name} ,
+       #{width} ,
+       #{height}
+    )
+  </insert>
+ 
+  
+  <delete id="deletePicture"  parameterType="ImageInfo">
+      DELETE from t_img_info where
+      img_code = #{img_code}
+      and app_info_code =#{app_info_code}
+  </delete>
+  
+  <select id="selectMaxImageId"  resultType ="Integer">
+    select MAX(id)+1 from t_img_info 
+  </select>
+  
+   
+
+  <update id="updatePicture" parameterType="ImageInfo"  >
+    update t_img_info 
+    set img_name = #{img_name} ,
+    exe_name = #{exe_name},
+    seq_id = seq_id +1 
+    <where>
+     <if test="img_code != null" >
+        img_code = #{img_code}
+    </if>
+     <if test="app_info_code != null" >
+       and app_info_code = #{app_info_code}
+    </if>
+    </where>
+  </update>
+  
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.sys.SysMapper">
+    
+    <!-- 
+    <resultMap type="com.wx.entity.Organization" id="userMap">
+      
+        <id column="user_id" property="userId" ></id>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+    </resultMap> 
+    -->
+    
+    <select id="queryMenusTree" parameterType="HashMap" resultType="Menu" >
+        select * from T_MENUS 
+        <where>IS_USE = 1
+        <if test="ENTITY_ID != 1">
+       	  and ENTITY_ID = #{ENTITY_ID}
+       	 </if>
+        order by PARENT_ID,MENU_ORDER
+        </where>
+    </select>
+    <insert id="insertRole" parameterType = "Role" >
+    	insert into T_ROLES
+  		(ID, ROLE_CODE, ROLE_NAME, ENTITY_ID, CREATE_DATE, CREATE_USER_ID, IS_USE, REMARK,LAST_UPDATE_USER_ID,LAST_UPDATE_DATE)
+		values
+  		( T_ROLES_SEQ.NEXTVAL, #{ROLE_CODE},  #{ROLE_NAME}, #{ ENTITY_ID},  to_date(#{CREATE_DATE},'yyyy-mm-dd hh24:mi:ss'),  #{CREATE_USER_ID}, #{IS_USE},#{REMARK},#{LAST_UPDATE_USER_ID}, to_date(#{LAST_UPDATE_DATE},'yyyy-mm-dd hh24:mi:ss'))
+
+    </insert>
+    
+    <select id="queryRoles" parameterType="Role" resultType="Role" >
+        select t_roles.*, 
+        (select cu.username from t_users cu where cu.id = t_roles.create_user_id ) create_user_name,
+        (select luu.username from t_users luu where luu.id = t_roles.last_update_user_id ) last_update_user_name 
+       from T_ROLES t_roles
+        
+         <where>
+            <if test="ROLE_NAME != null">
+            	 t_roles.ROLE_NAME like concat(concat('%',#{ROLE_NAME}),'%')
+            </if>
+            
+            <if test="IS_USE != null ">
+            	 and t_roles.IS_USE = #{IS_USE}
+            </if> 
+            
+             <if test="ENTITY_ID != 1 "> <!-- 约定：平台实体id为 1 -->
+            	and t_roles.ENTITY_ID = #{ENTITY_ID}
+          </if>
+              
+        </where> 
+    </select>
+    
+    
+    <update id="updateRole" parameterType="Role">
+    	update T_ROLES 
+	    <trim prefix="set" suffixOverrides=",">
+	        <if test="ROLE_CODE != null">ROLE_CODE = #{ROLE_CODE},</if>
+	        <if test="ROLE_NAME !=null">ROLE_NAME = #{ROLE_NAME},</if>
+	        <if test="ENTITY_ID !=null">ENTITY_ID = #{ENTITY_ID},</if>
+	        <if test="LAST_UPDATE_DATE !=null">LAST_UPDATE_DATE = to_date(#{LAST_UPDATE_DATE},'yyyy-mm-dd hh24:mi:ss'),</if>
+	        <if test="LAST_UPDATE_USER_ID !=null">LAST_UPDATE_USER_ID = #{LAST_UPDATE_USER_ID},</if>
+	        <if test="REMARK !=null">REMARK = #{REMARK},</if>
+	        <if test="IS_USE !=null">IS_USE = #{IS_USE},</if>
+	      
+	     </trim>
+	      where ID = #{ID}
+    </update>
+    
+    
+    <insert id="insertRoleMenu" parameterType = "RoleMenu">
+    	insert into T_MENU_ROLE( ID ,MENU_ID ,ROLE_ID ,ENTITY_ID , CREATE_USER_ID,CREATE_DATE ,LAST_UPDATE_USER_ID , LAST_UPDATE_DATE) 
+    	values(
+    	        T_MENU_ROLE_SEQ.NEXTVAL ,#{MENU_ID} ,#{ROLE_ID} ,#{ENTITY_ID}, #{CREATE_USER_ID}, to_date(#{CREATE_DATE} ,'yyyy-mm-dd hh24:mi:ss'),#{LAST_UPDATE_USER_ID} , to_date(#{LAST_UPDATE_DATE} ,'yyyy-mm-dd hh24:mi:ss') 
+    	 )
+    </insert>
+    
+    
+    <update id="updateRoleMenu" parameterType = "RoleMenu">
+    	update T_MENU_ROLE 
+    	 <trim prefix="set" suffixOverrides=",">
+	        <if test="MENU_ID != null">MENU_ID = #{MENU_ID},</if>
+	        <if test="ROLE_ID !=null">ROLE_ID = #{ROLE_ID},</if>
+	        <if test="ENTITY_ID !=null">ENTITY_ID = #{ENTITY_ID},</if>
+	        <if test="LAST_UPDATE_DATE !=null">LAST_UPDATE_DATE = to_date(#{LAST_UPDATE_DATE},'yyyy-mm-dd'),</if>
+	        <if test="LAST_UPDATE_USER_ID !=null">LAST_UPDATE_USER_ID = #{LAST_UPDATE_USER_ID},</if>
+	     </trim>
+	      where ID = #{ID}
+    </update>
+    
+    <select id="queryRoleMenus"  parameterType="RoleMenu" resultType="RoleMenu">
+     select * from T_MENU_ROLE
+        <where>
+          <if test="ROLE_ID != null">
+          	 ROLE_ID = #{ROLE_ID}
+          </if>
+          
+          <if test="ID != null ">
+          	 and ID = #{ID}
+          </if> 
+          
+           <if test="ENTITY_ID != 1 "> <!-- 约定：平台实体id为 1 -->
+          	and ENTITY_ID = #{ENTITY_ID}
+        </if>
+            
+      </where> 
+    	
+    </select>
+    
+    <delete id="deleteRoleMenus"  parameterType="RoleMenu">
+        delete from T_MENU_ROLE 
+        <where>
+	          <if test="ROLE_ID != null">
+	          	 ROLE_ID = #{ROLE_ID}
+	          </if>
+	          
+	          <if test="ID != null ">
+	          	 and ID = #{ID}
+	          </if> 
+	          
+	           <if test="ENTITY_ID !=null and ENTITY_ID != 1 "> <!-- 约定：平台实体id为 1 -->
+	          	and ENTITY_ID = #{ENTITY_ID}
+	           </if>
+         </where>
+    </delete>
+    
+    
+    
+     
+
+</mapper>

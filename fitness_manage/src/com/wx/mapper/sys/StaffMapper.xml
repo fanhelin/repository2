@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.sys.StaffMapper">
+  <select id="selectStaffs" parameterType="Staff" resultType ="Staff" >
+      select st.* , 
+         (select tu.username from t_users tu where tu.id = st.create_user_id ) create_user_name,
+         (select luu.username from t_users luu where luu.id = st.last_update_user_id ) last_update_user_name 
+      from T_STAFFS st
+      <where>
+         <if test="staff_name != null">
+             st.staff_name like concat(concat('%',#{staff_name}),'%')
+         </if>
+         
+         <if test="sex != null">
+            and st.sex=#{sex}
+         </if>
+         
+         <if test="entity_id != null">
+           and st.entity_id=#{entity_id}
+         </if>
+         
+         <if test="is_use != null">
+            and st.is_use=#{is_use}
+         </if>
+         
+      </where>
+  </select> 
+  
+  <insert id="insertStaff"  parameterType="Staff" >
+   insert into T_STAFFS(ID, ENTITY_ID, STAFF_CODE, STAFF_NAME, SEX, STATURE, WEIGHT, AGE, BIRTHDAY, FAMILY_ADDRESS, E_MAIL,
+   PHONE, OFFICE_TELEPHONE, LINKMAN, LINKMAN_TELEPHONE, EDUCATE, CREATE_USER_ID, CREATE_DATE, IS_USE ,LAST_UPDATE_USER_ID,LAST_UPDATE_DATE)
+   values(T_STAFFS_SEQ.NEXTVAL, #{entity_id}, concat(#{code_prefix},T_STAFFS_SEQ.NEXTVAL), #{staff_name}, #{sex}, #{stature}, #{weight}, #{age}, to_date(#{birthday},'yyyy-mm-dd'), #{family_address}, #{e_mail},
+   #{phone}, #{office_telephone}, #{linkman}, #{linkman_telephone}, #{educate}, #{create_user_id}, to_date(#{create_date},'yyyy-mm-dd hh24:mi:ss'), #{is_use},#{last_update_user_id}, to_date(#{last_update_date},'yyyy-mm-dd hh24:mi:ss'))
+  </insert>
+  
+  <update id="updateStaff"  parameterType="Staff">
+    update T_STAFFS 
+         <trim prefix="set" suffixOverrides=",">
+	        <if test="entity_id != null">ENTITY_ID = #{entity_id},</if>
+	       
+	        <if test="staff_name !=null">staff_name = #{staff_name},</if>
+	        <if test="sex !=null">sex = #{sex},</if>
+	        
+	         <if test="stature !=null">stature = #{stature},</if>
+	         <if test="weight !=null">weight = #{weight},</if>
+	         <if test="age !=null">age = #{age},</if>
+	         
+	         <if test="birthday !=null">birthday = to_date(#{birthday},'yyyy-mm-dd'),</if>
+	         <if test="family_address !=null">family_address = #{family_address},</if>
+
+	        <if test="phone !=null">phone = #{phone},</if>
+	        <if test="e_mail !=null">e_mail = #{e_mail},</if>
+	        <if test="office_telephone !=null">office_telephone = #{office_telephone},</if>
+
+	         <if test="linkman !=null">linkman = #{linkman},</if>
+	         <if test="linkman_telephone !=null">linkman_telephone = #{linkman_telephone},</if>
+	         <if test="educate !=null">educate = #{educate},</if>
+	         
+	        <if test="last_update_date !=null ">last_update_date = to_date(#{last_update_date},'yyyy-mm-dd hh24:mi:ss'),</if>
+	        <if test="last_update_user_id !=null ">last_update_user_id = #{last_update_user_id},</if>
+	        <if test="is_use !=null">is_use = #{is_use},</if>
+	     </trim>
+	      where ID = #{id}
+  </update>
+  
+  <delete id="deleteStaff"  parameterType="Integer">
+     delete from T_STAFFS 
+      <where>
+		 where id = #{id}  
+      </where>
+  </delete>
+  
+</mapper>

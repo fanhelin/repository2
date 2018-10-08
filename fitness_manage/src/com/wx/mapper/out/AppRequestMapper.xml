@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.out.AppRequestMapper">
+
+
+  <select id="selectPictures" parameterType="ImageInfo" resultType ="OutPicInfo" >
+    select ii.img_code,ii.img_name,ii.title,ii.seq_id from t_img_info ii 
+	where ii.app_info_code = #{app_info_code} ORDER BY id desc ;
+  </select> 
+  
+
+ 
+ <select id="selectPicSetLists" parameterType="PicSet" resultType="OutPicSetDetail" >
+    select psl.*  from t_pic_set_list psl
+    left JOIN t_pic_set ps on (ps.set_code = psl.set_code and  ps.app_info_code = psl.app_info_code)
+	where ps.app_info_code = #{app_info_code} ORDER BY set_code desc ;
+ </select>
+ 
+ <select id="selectAppInfo" parameterType="AppInfo" resultType = "AppInfo">
+    select * from t_app_info ai where ai.app_info_code = #{app_info_code}
+ </select>
+ 
+ <select id="selectCommodityType" parameterType="CommodityType" resultType="CommodityType" >
+    select * from t_commodity_type ct where ct.app_info_code = #{app_info_code}
+ </select>
+ 
+  <select id="selectCommodityInfo" parameterType="CommodityInfo" resultType="CommodityInfo" >
+    select ci.* ,(select CONCAT_WS('?d=' ,img_name,seq_id) from t_commodity_img cpic where cpic.com_code = ci.com_code and cpic.img_type='1' LIMIT 0,1) as main_pic 
+    from t_commodity_info ci <where>
+   		 ci.app_info_code = #{app_info_code}
+   		 <if test="type_code !=null">
+   		   and ci.type_code = #{type_code}
+   		 </if>
+   		 
+   		 <if test="sub_type !=null">
+   		   and ci.sub_type = #{sub_type}
+   		 </if>
+    </where> 
+ </select>
+ 
+ <select id="selectCommodityImgs" parameterType="CommodityImg" resultType="CommodityImg" >
+    select * from t_commodity_img ci 
+    <where>
+   		 ci.app_info_code = #{app_info_code}
+   		 and ci.com_code = #{com_code} 
+   		 <if test="img_type !=null">
+   		   and ci.img_type = #{img_type}
+   		 </if>
+    </where> 
+ </select>
+ 
+ 
+  
+</mapper>

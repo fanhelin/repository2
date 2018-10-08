@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.common.CommonMapper">
+
+	<!-- The proxy configures the public universal mapping interface -->
+
+
+	<!-- Inquire -->
+	<select id="querySequence" parameterType="HashMap" resultType="int">
+		select ${tableName}_SEQ.NEXTVAL from dual
+	</select>
+
+	<select id="queryTruck_Type" parameterType="TruckType" resultType="TruckType">
+		select * from t_truck_type
+		<where>
+			<if test="TRUCK_NAME!=null">
+				and truck_name = #{TRUCK_NAME}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryVehicleType" parameterType="VehicleType" resultType="VehicleType">
+		select * from t_vehicle_type
+		<where>
+			<if test="vehicle_name!=null">
+				and vehicle_name = #{vehicle_name}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 车辆类型 -->
+   <select id="queryCarClass" parameterType="CarClass" resultType="CarClass">
+		select * from t_car_class
+		<where>
+			<if test="class_code!=null">
+				and class_code = #{class_code}
+			</if>
+			
+			<if test="class_name!=null">
+				and class_name = #{class_name}
+			</if>
+			
+			<if test="car_type!=null">
+				and car_type = #{car_type}
+			</if>
+			
+			<if test="other_cartype!=null">
+				and other_cartype = #{other_cartype}
+			</if>
+
+		</where>
+	</select>
+	   <select id="queryUseCharacter" parameterType="UseCharacter" resultType="UseCharacter">
+		select * from T_use_character
+		<where>
+			<if test="character_code!=null">
+				and character_code = #{character_code}
+			</if>
+			
+			<if test="character_name!=null">
+				and character_name = #{character_name}
+			</if>
+
+		</where>
+	</select>
+	
+	
+	<!-- 国民经济行业分类和代码表数据来源 国民经济行业分类和代码表   fhr-->
+	<select id="queryIndustrys"  resultType="Industry"> 
+	   select * from t_industry where level_type=4 and is_use = 1
+	    union
+	   select t1.* from t_industry t1 ,(select * from t_industry where level_type=4 and is_use = 1) t4 where t1.level_type=1 and t1.level1 = t4.level1
+	    union
+	   select t2.* from t_industry t2 ,(select * from t_industry where level_type=4 and is_use = 1) t4 where t2.level_type=2 and t2.level2 = t4.level2
+	    union
+	   select t3.* from t_industry t3 ,(select * from t_industry where level_type=4 and is_use = 1) t4  where t3.level_type=3 and t3.level3 = t4.level3
+	</select>
+
+	<!-- 查询捆绑单位  fhr-->
+	<select id="queryPackageUnits"  resultType="PackageUnit"> 
+	   select * from T_PACKAGE_UNIT where IS_USE=1 
+	</select>
+	
+	
+	<!-- 查询货物类型  fhr-->
+	<select id="queryCargoTypes"  resultType="CargoType"> 
+	   select * from T_CARGO_TYPE where IS_USE=1 
+	</select>
+	
+
+	<select id="queryCarArriveState" parameterType="QueryEntity"  resultType="int">
+	  select count(*) from t_list_car_task_route ctr 
+	  where ctr.parent_id = 
+	  (
+	     select id from t_list_car_task lct
+	     where lct.task_code = #{param_1}
+	     and lct.car_state = 2
+	   )
+	   and ctr.station_id = #{organization_id}
+	   and ctr.actual_arrive_date is not null 
+	</select>
+	
+	<select id="queryCarDepart" parameterType="QueryEntity"  resultType="int">
+	  select count(*) from t_list_car_task_route ctr 
+		where ctr.parent_id = (
+			     select id from t_list_car_task lct
+			     where lct.task_code =  #{param_1} and lct.car_state = 6
+		) 
+	 and ctr.station_seq = ( select it.station_seq-1 from t_list_car_task_route it where it.parent_id = ctr.parent_id and it.station_id = #{organization_id} ) 
+	 and ctr.actual_leave_date is not null 
+	</select>
+		
+</mapper>

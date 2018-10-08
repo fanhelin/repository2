@@ -1,0 +1,20 @@
+{"total":10,
+"rows":[
+{
+	"city_code":"",
+	"first_char":"H",
+	"id":150102001,
+	"is_use":1,"lat":40.82619857788086,
+	"level_type":"4",
+	"lng":111.68599700927734,
+	"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,海拉尔东路街道",
+	"name":"海拉尔东路街道",
+	"parent_id":"150102",
+	"pinyin":"Hailaerdonglujiedao",
+	"short_hand":"HLEDLJD",
+	"short_name":"海拉尔东路街道",
+	"zip_code":""
+},
+{"city_code":"","first_char":"X","id":150102002,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,锡林路街道","name":"锡林路街道","parent_id":"150102","pinyin":"Xilinlujiedao","short_hand":"XLLJD","short_name":"锡林路街道","zip_code":""},{"city_code":"","first_char":"Z","id":150102003,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,中山东路街道","name":"中山东路街道","parent_id":"150102","pinyin":"Zhongshandonglujiedao","short_hand":"ZSDLJD","short_name":"中山东路街道","zip_code":""},{"city_code":"","first_char":"D","id":150102004,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,东街街道","name":"东街街道","parent_id":"150102","pinyin":"Dongjiejiedao","short_hand":"DJJD","short_name":"东街街道","zip_code":""},{"city_code":"","first_char":"X","id":150102005,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,西街街道","name":"西街街道","parent_id":"150102","pinyin":"Xijiejiedao","short_hand":"XJJD","short_name":"西街街道","zip_code":""},{"city_code":"","first_char":"D","id":150102006,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,东风路街道","name":"东风路街道","parent_id":"150102","pinyin":"Dongfenglujiedao","short_hand":"DFLJD","short_name":"东风路街道","zip_code":""},{"city_code":"","first_char":"Y","id":150102007,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,迎新路街道","name":"迎新路街道","parent_id":"150102","pinyin":"Yingxinlujiedao","short_hand":"YXLJD","short_name":"迎新路街道","zip_code":""},{"city_code":"","first_char":"C","id":150102008,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,成吉思汗大街街道","name":"成吉思汗大街街道","parent_id":"150102","pinyin":"Chengjisihandajiejiedao","short_hand":"CJSHDJJD","short_name":"成吉思汗大街街道","zip_code":""},{"city_code":"","first_char":"B","id":150102101,"is_use":1,"lat":40.91279983520508,"level_type":"4","lng":111.94300079345703,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,保合少镇","name":"保合少镇","parent_id":"150102","pinyin":"Baoheshaozhen","short_hand":"BHSZ","short_name":"保合少镇","zip_code":""},{"city_code":"","first_char":"X","id":150102400,"is_use":1,"lat":40.82619857788086,"level_type":"4","lng":111.68599700927734,"merger_name":"中国,内蒙古自治区,呼和浩特市,新城区,新城区鸿盛高科技园区","name":"新城区鸿盛高科技园区","parent_id":"150102","pinyin":"Xinchengquhongshenggaokejiyuanqu","short_hand":"XCQHSGKJYQ","short_name":"新城区鸿盛高科技园区","zip_code":""}]}			
+    
+    

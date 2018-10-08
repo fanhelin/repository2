@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.practice.PracticeMapper">
+ 
+  <select id="selectPractice" parameterType="Map" resultType ="Practice" >
+    select cs.code as course_code,cp.code as chapter_code,tp.code as code,tp.datetime as datetime,tp.minute as minute,cs.name as course_name,cp.name as chapter_name,cp.image_name as chapter_imge  from t_practice tp,t_course cs,t_chapter cp 
+	<where>
+	     tp.course=cs.code and tp.chapter=cp.code
+	    <if test="app_info_code != null and app_info_code !=''">
+	         and tp.app_info_code = #{app_info_code}
+	    </if>
+	    <if test="openid != null and openid !=''">
+	         and tp.openid = #{openid}
+	    </if>
+	    <if test="course != null and course !=''">
+	         and tp.course = #{course}
+	    </if>
+	    
+	     <if test="chapter != null and chapter !=''">
+	         and tp.chapter = #{chapter}
+	    </if>
+	</where>
+	order by tp.datetime
+   
+  </select> 
+  
+   <insert id="addPractice" parameterType="Practice">
+    insert into t_practice(app_info_code ,code ,openid ,course ,chapter ,minute ,datetime) 
+     values(#{app_info_code} ,#{code} ,#{openid} ,#{course} ,#{chapter} ,#{minute} ,#{datetime}) 
+  </insert>
+ <!--  
+  <select id="getLastPractice" parameterType="Practice" resultType ="Practice" >
+   select * from t_practice p where p.openid = #{openid} 
+	and p.datetime =( 
+	    select MAX(datetime) as `datetime` from t_practice tp where tp.openid = #{openid}
+	)limit 0,1
+  </select> -->
+  
+  
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.course.CourseMapper">
+
+  <select id="selectCourses" parameterType="Course" resultType ="Course" >
+    select * from t_course cs
+	<where>
+		cs.state !='2'
+	    <if test="app_info_code != null and app_info_code != ''">
+	         and cs.app_info_code = #{app_info_code}
+	    </if>
+	    <if test="state != null and state != ''">
+	         and cs.state = #{state}
+	    </if>
+	    <if test="name != null and name != ''">
+	         and (cs.name like concat(concat('%',#{name}),'%'))
+	    </if>
+	</where>
+  </select> 
+  
+  <insert id="addCourse" parameterType="Course"  >
+    insert into t_course(code ,name ,app_info_code ,`describe`,price,total_chapter,state )
+    values(
+       #{code} ,
+       #{name} ,
+       #{app_info_code},
+       #{describe},
+       #{price},
+       0,
+      '0'
+    )
+  </insert>
+  
+  
+    <update id="updateCourse" parameterType="Course">
+     update t_course 
+     set 
+     name= #{name},
+     `describe`=#{describe},
+     price = #{price},
+     state=#{state}
+     where code = #{code} 
+  </update>
+  
+  <update id="deleteCourse"  parameterType="Course">
+      update t_course 
+      set state='2'
+      where
+      code = #{code} 
+      and app_info_code =#{app_info_code}
+  </update>
+  
+  <update id="updateCourseImg" parameterType="Course">
+     update t_course 
+     set 
+     image_name= #{image_name}
+     where code = #{code} 
+  </update>
+  
+  <select id="findClientCourse" parameterType="Client" resultType ="Course" >
+    select cs.*,cod.last_date as last_date,cod.sequence as `sequence` ,
+    (select count(minutes) from t_chapter tc where tc.course_code = cs.code) as totalMinutes ,
+    (cs.total_chapter - cod.sequence +1) as left_chapters 
+    from t_course cs,t_course_order cod
+	<where>
+	 	cs.code=cod.course_code
+	    <if test="openid != null and openid !=''">
+	         and cod.openid = #{openid}
+	    </if>
+	</where>
+  </select> 
+  
+  <select id="findCourseByOrder" parameterType="Course" resultType ="Course" >
+    select cs.code as code,cs.name as name,co.price as price,co.num as `num`  from t_course_order co,t_course cs 
+	<where>
+	 	co.course_code=cs.code
+	    <if test="code != null and code !=''">
+	         and co.nonce_str = #{code}
+	    </if>
+	</where>
+  </select> 
+
+  
+ <update id="updateCourseOrder" parameterType="CourseOrder">
+     update t_course_order 
+     set last_date=#{last_date},sequence=#{sequence}+1
+     where course_code = #{course_code} and openid=#{openid} and sequence &lt;= #{sequence}
+ </update>
+  
+   <insert id="addCourseOrder" parameterType="java.util.List"  >
+	 insert into t_course_order (
+	    code ,
+	    nonce_str,
+	    app_info_code,
+	    openid,
+	    course_code,
+	    buy_date,
+		sequence,
+		price,
+	    num,
+		course_name 
+	   )VALUES
+	     <foreach close=" " collection="list" item="item" index="index" open=" " separator=","> 
+	      ( #{item.code},#{item.nonce_str},#{item.app_info_code},#{item.openid},#{item.course_code}, now(), 0, #{item.price} ,1, #{item.course_name} )
+	      </foreach>
+  </insert>
+  
+  <update id="courseRestart" parameterType="CourseOrder">
+     update t_course_order 
+     set last_date=null,sequence=1
+     where course_code = #{course_code} and openid=#{openid}
+ </update>
+  
+ 
+   <select id="getClientCourseCount" parameterType="CourseOrder" resultType ="Integer" >
+      select count(*) as count from t_course_order co where co.openid = #{openid} and co.course_code = #{course_code}
+  </select>  
+  
+  
+</mapper>

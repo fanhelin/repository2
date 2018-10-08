@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.rcv.RcvInfoMapper">
+
+  <select id="selectRcvInfos" parameterType="RcvInfo" resultType ="RcvInfo" >
+     select * from t_revinfo ri 
+     <where>
+     ri.app_info_code = #{app_info_code} 
+     and ri.openid = #{openid} 
+     <if test="status != null">
+        and ri.status = #{status}
+     </if>
+     
+     <if test="isDefault != null">
+        and ri.isDefault = #{isDefault}
+     </if>
+     </where>  
+  </select> 
+  
+  <update id="updateRcvInfos" parameterType="RcvInfo">
+     update t_revinfo
+      <trim prefix="set" suffixOverrides = ",">
+          <if test="name != null">
+              name = #{name},
+          </if>
+          
+           <if test="mobile != null">
+              mobile = #{mobile},
+          </if>
+          
+          <if test="address != null">
+              address = #{address},
+          </if>
+          
+          <if test="isDefault != null">
+              isDefault = #{isDefault},
+          </if>
+          
+          <if test="status != null">
+              status = #{status},
+          </if>
+      </trim>
+      <where>
+        app_info_code = #{app_info_code}
+        and openid= #{openid}
+        <if test="rcv_code != null">
+          and rcv_code = #{rcv_code}
+        </if>
+      </where>
+  </update>
+  
+  <insert id="addRcvInfo"  parameterType="RcvInfo">
+     insert into t_revinfo(app_info_code ,openid , rcv_code , name, mobile, address) 
+     values(#{app_info_code},#{openid},#{rcv_code},#{name},#{mobile},#{address})
+  </insert>
+  
+  <delete id="deleteRcvInfo"  parameterType="RcvInfo">
+    delete from t_revinfo where
+     rcv_code = #{rcv_code}
+     and app_info_code = #{app_info_code} 
+  </delete>
+  
+</mapper>

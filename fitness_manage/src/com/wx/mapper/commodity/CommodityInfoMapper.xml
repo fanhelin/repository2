@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.commodity.CommodityInfoMapper">
+
+ <select id="findCommodityInfoList" parameterType="Map" resultType="CommodityInfo" >
+    select * from t_commodity_info cf where cf.app_info_code = #{app_info_code} and cf.status !='2'
+ </select>
+ 
+ <insert id="addCommodityInfo" parameterType="CommodityInfo">
+   insert into t_commodity_info(app_info_code,code,name,score,price,r_price,unit,sum,title,des,remark,status,main_img,fu_img)values(
+   	  #{app_info_code}, #{code}, #{name},#{score},#{price},#{r_price},#{unit},#{sum},#{title},#{des},#{remark},#{status},#{main_img},#{fu_img}
+   )
+ </insert>
+ 
+ <update id="updateCommodityInfo" parameterType="CommodityInfo">
+   update t_commodity_Info 
+   <trim prefix="set" suffixOverrides=",">
+   	<if test="name != null">name = #{name},</if>
+	<if test="score != null">score = #{score},</if>
+	<if test="price != null">price = #{price},</if>
+	<if test="r_price != null">r_price = #{r_price},</if>
+	<if test="unit != null">unit = #{unit},</if>
+	<if test="sum != null">sum = #{sum},</if>
+	<if test="reduceSum != null">sum = sum - #{reduceSum},</if>
+	<if test="title != null">title = #{title},</if>
+	<if test="des != null">des = #{des},</if>
+	<if test="status != null">status = #{status},</if>
+	<if test="main_img != null">main_img = #{main_img},</if>
+	<if test="fu_img != null">fu_img = #{fu_img},</if>
+    </trim>
+    where code = #{code}
+ </update>
+ 
+ <update id="deleteCommodityInfo" parameterType="CommodityInfo">
+    update  t_commodity_Info set status='2' where code = #{code}
+ </update>
+ 
+  
+</mapper>

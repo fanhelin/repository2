@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.commodity.ComTypeMapper">
+
+ <select id="selectCommodityType" parameterType="CommodityType" resultType="CommodityType" >
+    select * from t_commodity_type ct where ct.app_info_code = #{app_info_code}
+ </select>
+ 
+ <insert id="addCommodityType" >
+   insert into t_commodity_type(app_info_code,type_code,name,des)values(
+   	  #{app_info_code}, #{type_code}, #{name}, #{des}
+   )
+ </insert>
+ 
+ <update id="modifyCommodityType">
+   update t_commodity_type set 
+    name = #{name}, 
+    des = #{des}
+    where app_info_code = #{app_info_code} and type_code = #{type_code}
+ </update>
+ 
+ <delete id="delCommodityType">
+    delete from t_commodity_type  where app_info_code = #{app_info_code} and type_code = #{type_code}
+ </delete>
+ 
+  
+</mapper>

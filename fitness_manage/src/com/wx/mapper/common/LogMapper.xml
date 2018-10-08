@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.common.LogMapper">
+
+  <select id="selectLogs" parameterType = "LogBean" resultType = "LogBean">
+    select * from(
+     select t_m.* ,(select tu.username from t_users tu where tu.id = t_m.use_id ) userName 
+     from T_SAAS_LOGS t_m
+     <where>
+       <if test="log_type">
+          t_m.log_type = #{log_type}
+       </if>
+       
+       <if test="use_id">
+       	  and t_m.use_id = #{use_id}
+       </if>
+       
+        <if test="target">
+       	  and t_m.target like concat(concat('%',#{target}),'%')
+        </if>
+        
+        <if test="result">
+       	  and result like concat(concat('%',#{result}),'%')
+        </if>
+     </where>
+     ) t 
+     <where>
+       <if test="userName != null">
+       		t.userName like concat(concat('%',#{userName}),'%')
+       </if>
+     </where>
+  </select>
+
+  <insert id="insertLogBatch2" useGeneratedKeys="true" parameterType="java.util.List">
+   insert all
+     <foreach collection="list" item="item" index="index" separator=" " >  
+     into T_SAAS_LOGS(id, module, datetime, use_id, target, result, log_type ,reason ) values  
+        (T_SAAS_LOGS_SEQ.NEXTVAL,#{item.module},to_timestamp(#{item.datetime},'yyyy-mm-dd hh24:mi:ssxff'),#{item.use_id},#{item.target},#{item.result},#{item.log_type},#{item.reason})  
+    </foreach> 
+  select 1 from dual 
+ </insert>
+ 
+ <insert id="insertLogBatch" parameterType="java.util.List"> 
+    insert into T_SAAS_LOGS (id, module, datetime, use_id, target, result, log_type,reason,event ) 
+ 
+ <foreach close=")" collection="list" item="item" index="index" open="(" separator="union"> 
+	select
+	pkg_saas_tools.f_getseqkey('T_SAAS_LOGS'),
+	#{item.module,jdbcType=VARCHAR},
+	to_timestamp(#{item.datetime},'yyyy-mm-dd hh24:mi:ssxff'),
+	#{item.use_id,jdbcType=INTEGER},
+	#{item.target,jdbcType=VARCHAR},
+	#{item.result,jdbcType=VARCHAR},
+	#{item.log_type,jdbcType=INTEGER},
+	#{item.reason,jdbcType=VARCHAR},
+	#{item.event,jdbcType=VARCHAR}
+   from dual 
+</foreach>
+
+</insert>
+   
+</mapper>

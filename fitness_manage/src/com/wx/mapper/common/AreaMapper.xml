@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.common.AreaMapper">
+
+  <select id="selectAreas" parameterType = "Area" resultType = "Area">
+      select  id, name, short_name, level_type, city_code, zip_code, merger_name, lng, lat, pinyin, first_char, short_hand, parent_id, is_use from T_AREAS 
+    <where>
+      <if test="is_use != null">
+        and is_use = #{is_use}
+      </if>
+      
+      <if test="level_type != null">
+         and level_type = #{level_type}
+      </if>
+      
+       <if test="parent_id != null">
+         and  parent_id like concat(#{parent_id},'%')
+      </if>
+      
+       <if test="name != null">
+          and ( name like concat(concat('%',#{name}),'%') or pinyin like concat(concat('%',#{name}),'%') )
+      </if>
+
+    </where>
+  </select>
+
+</mapper>

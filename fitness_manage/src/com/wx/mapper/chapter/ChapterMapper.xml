@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.chapter.ChapterMapper">
+
+  <select id="selectChapters" parameterType="Chapter" resultType ="Chapter" >
+    select * from t_chapter ct
+	<where>
+	    <if test="course_code != null and course_code !=''">
+	         and ct.course_code = #{course_code}
+	    </if>
+	
+	</where>
+	 order by sequence
+  </select> 
+  
+  <insert id="addChapter" parameterType="Chapter" >
+    insert into t_chapter(code ,name ,course_code ,sequence,`describe`)
+    values(
+       #{code} ,
+       #{name} ,
+       #{course_code},
+       #{sequence},
+       #{describe}
+    )
+  </insert>
+  
+  <update id="updateChapter" parameterType="Chapter">
+     update t_Chapter 
+     set 
+     name= #{name},
+     `describe`= #{describe}
+     where code = #{code} 
+  </update>
+  
+    <update id="updateChapterVido" parameterType="Chapter">
+     update t_Chapter 
+     set 
+     vido_name= #{vido_name},
+     minutes = #{minutes}
+     where code = #{code} 
+  </update>
+  
+  <update id="updateChapterImg" parameterType="Chapter">
+     update t_Chapter 
+     set 
+     image_name= #{image_name}
+     where code = #{code} 
+  </update>
+  
+  <delete id="deleteChapter"  parameterType="Chapter">
+      DELETE from t_chapter where
+      code = #{code} ;
+  </delete>
+  
+    <update id="updateSequence" parameterType="Chapter">
+      update t_Chapter set sequence = sequence - 1 where
+      course_code = #{course_code} and sequence > #{sequence} ;
+  </update>
+  
+  <select id="getSequence"  parameterType="Chapter" resultType = "Integer">
+     select count(*) from t_Chapter where course_code = #{course_code}
+  </select>
+ 
+ <select id="findChapterByCourse" parameterType="Course" resultType ="Chapter" >
+    select ct.*,(select count(1) from t_chapter where course_code =#{code}) as num from t_chapter ct
+	<where>
+	    1=1
+	    <if test="code != null and code !=''">
+	         and ct.course_code = #{code}
+	    </if>
+	    <if test="sequence != null and sequence !=''">
+	         and ct.sequence = #{sequence}
+	    </if>
+	    limit 1
+	</where>
+  </select> 
+  
+</mapper>

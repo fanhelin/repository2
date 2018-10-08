@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.client.ClientMapper">
+
+   <select id="findClientTotal" parameterType="Map" resultType ="int" >
+    select count(1) from t_client ct
+	<where>
+	     1=1
+	    <if test="app_info_code != null and app_info_code !=''">
+	         and ct.app_info_code = #{app_info_code}
+	    </if>
+	    <if test="mobile != null and mobile !=''">
+	         and ct.mobile = #{mobile}
+	    </if>
+	    <if test="userName != null and userName !=''">
+	         and ct.name = #{userName}
+	    </if>
+	</where>
+   </select> 
+  
+  <select id="selectClients" parameterType="Map" resultType ="Client" >
+    select * from t_client ct
+	<where>
+	     1=1
+	    <if test="app_info_code != null and app_info_code !=''">
+	         and ct.app_info_code = #{app_info_code}
+	    </if>
+	    <if test="mobile != null and mobile !=''">
+	         and ct.mobile = #{mobile}
+	    </if>
+	    <if test="userName != null and userName !=''">
+	         and ct.name = #{userName}
+	    </if>
+	    limit #{currentLine},#{rows}
+	</where>
+   
+  </select> 
+  
+  
+   <select id="getUserInfo" parameterType="Map" resultType ="Client" >
+    select * from t_client ct
+	<where>
+	   ct.app_info_code = #{app_info_code}
+	    <if test="openid != null">
+	         and ct.openid  = #{openid}
+	    </if>
+	   
+	</where>
+   
+  </select> 
+  
+  
+  
+    <insert id="addClient" parameterType="Client"  >
+    insert into t_client(app_info_code,openid ,name ,mobile ,address )
+    values(
+       #{app_info_code} ,
+       #{openid} ,
+       #{name},
+       #{mobile},
+       #{address}
+    )
+  </insert>
+  
+   
+  <update id="updateClient" parameterType="Client">
+     update t_client 
+    <trim prefix="set" suffixOverrides=",">
+    	<if test="name != null">name = #{name},</if>
+    	<if test="mobile != null">mobile = #{mobile},</if>
+    	<if test="address != null">address = #{address},</if>
+    	<if test="score != null">score = #{score},</if>
+     </trim>
+     where openid = #{openid} and app_info_code = #{app_info_code}
+     
+  </update>
+  
+   <update id="updateSignInfo" parameterType="Client" >
+     update t_client 
+     set 
+     sign_image = #{sign_image},
+     sign_days = sign_days+1,
+     con_sign_days = #{con_sign_days} ,
+     score=#{score},
+     last_sign_day=now()
+     where openid = #{openid} and app_info_code = #{app_info_code}
+   </update>
+ 
+  <!-- 
+   <select id="selectPicSetList" parameterType="PicSetList" resultType ="PicSetList" >
+     select inner_t.*, CONCAT_WS('?d=',CONCAT_WS('/' , ai.img_fold , ai.app_type , ai.app_id , inner_t.set_code,inner_t.img_name),inner_t.seq_id) as path from (
+     select psl.* from t_pic_set_list psl where psl.app_info_code=#{app_info_code} and psl.set_code = #{set_code}
+	) inner_t 
+	 left JOIN t_app_info ai on (ai.app_info_code = inner_t.app_info_code )
+	ORDER BY id desc ;
+  </select> 
+  
+  <insert id="addPicSet" parameterType="PicSet"  >
+    insert into t_pic_set(set_code ,set_name ,app_info_code ,des )
+    values(
+       #{set_code} ,
+       #{set_name} ,
+       #{app_info_code},
+       #{des}
+    )
+  </insert>
+  
+  <update id="modifyPicSet">
+     update t_pic_set 
+     set 
+     set_name= #{set_name},
+      des = #{des}
+      where set_code = #{set_code} and app_info_code = #{app_info_code}
+  </update>
+ 
+  
+  <delete id="deletePicSet"  parameterType="PicSet">
+      DELETE from t_pic_set where
+      set_code = #{set_code}
+      and app_info_code =#{app_info_code}
+  </delete>
+  
+  <select id="getMaxPicSetListId"  parameterType="PicSetList" resultType ="Integer">
+    select count(id)+1 from t_pic_set_list psl where psl.set_code = #{set_code} 
+  </select>
+  
+  
+  <insert id="addPicSetList" parameterType="PicSetList"  >
+    insert into t_pic_set_list(set_code ,app_info_code,img_code,img_name ,title , des  ,price,width ,height )
+    values(
+       #{set_code} ,
+       #{app_info_code} ,
+       #{img_code} ,
+       #{img_name},
+       #{title},
+       #{des} ,
+       #{price},
+       #{width} ,
+       #{height}
+    )
+  </insert>
+  
+  <delete id="deletePicSetList"  parameterType="PicSetList" >
+     delete from t_pic_set_list  
+     where
+     set_code = #{set_code} 
+     and img_code = #{img_code} 
+     and app_info_code = #{app_info_code}
+  </delete>
+  
+   
+
+  <update id="modifyPicSetList" parameterType="PicSetList"  >
+    update t_pic_set_list  
+     set title = #{title} ,
+     des = #{des},
+     img_name=#{img_name} ,
+     price = #{price} ,
+     seq_id = seq_id +1
+    <where>
+        app_info_code = #{app_info_code}
+     <if test="img_code != null" >
+       and img_code = #{img_code}
+    </if>
+     <if test="set_code != null" >
+      and set_code = #{set_code}
+    </if>
+    </where>
+    
+  </update> -->
+  
+</mapper>

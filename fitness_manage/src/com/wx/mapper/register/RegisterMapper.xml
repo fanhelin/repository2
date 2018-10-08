@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.register.RegisterMapper">
+
+  <select id="selectStations"  parameterType="Station" resultType ="Station">
+     select * from t_station st
+     <where>
+        <if test="app_info_code !=null " >
+             st.app_info_code = #{app_info_code}
+        </if>
+     </where>
+  </select>
+
+  <select id="selectLicenseTypes" parameterType="LicenseType" resultType ="LicenseType">
+      select * from t_license_type lt
+       <where>
+        <if test="app_info_code !=null " >
+             lt.app_info_code = #{app_info_code}
+        </if>
+     </where>
+  </select>
+
+ <!-- 增加或者更新卸车费用明细 fhr -->
+ <update id="saveStudentInfo" parameterType="Student" >
+  	
+    insert into t_student 
+	    set 
+	    code = #{code,jdbcType=VARCHAR},
+	    app_info_code = #{app_info_code,jdbcType=VARCHAR},
+	    state =  #{state,jdbcType = INTEGER} ,
+	    name =  #{name,jdbcType=VARCHAR},
+	    license_code =  #{license_code,jdbcType=INTEGER},
+	    idcard =  #{idcard,jdbcType=VARCHAR},
+	    addr_identity = #{addr_identity,jdbcType=VARCHAR},
+	    mobile =  #{mobile,jdbcType=VARCHAR},
+	    apply_station=  #{apply_station,jdbcType=VARCHAR},
+	    sex =  #{sex,jdbcType=VARCHAR},
+	    birthday =  #{birthday,jdbcType=VARCHAR},
+	    idcard_type =  #{idcard_type,jdbcType=INTEGER},
+	    post_addr =  #{post_addr,jdbcType=VARCHAR}
+	   <!--  idcard_img =  #{idcard_img,jdbcType=VARCHAR},
+	    face_img =  #{face_img,jdbcType=VARCHAR},
+	    health_img =  #{health_img,jdbcType=VARCHAR},
+	    protocol_img =  #{protocol_img,jdbcType=VARCHAR},
+	    paid_amount =  #{paid_amount,jdbcType=NUMERIC} -->
+    ON DUPLICATE key 
+    update 
+		    state =  #{state,jdbcType = INTEGER} ,
+		    name =  #{name,jdbcType=VARCHAR},
+		    license_code =  #{license_code,jdbcType=VARCHAR},
+		    idcard =  #{idcard,jdbcType=VARCHAR},
+		    addr_identity = #{addr_identity,jdbcType=VARCHAR},
+		    mobile =  #{mobile,jdbcType=VARCHAR},
+		    apply_station=  #{apply_station,jdbcType=VARCHAR},
+		    sex =  #{sex,jdbcType=VARCHAR},
+		    birthday =  #{birthday,jdbcType=VARCHAR},
+		    idcard_type =  #{idcard_type,jdbcType=INTEGER},
+		    post_addr =  #{post_addr,jdbcType=VARCHAR}
+
+	  <!-- 
+	     idcard_img =  #{idcard_img,jdbcType=VARCHAR},
+	    face_img =  #{face_img,jdbcType=VARCHAR},
+	    health_img =  #{health_img,jdbcType=VARCHAR},
+	    protocol_img =  #{protocol_img,jdbcType=VARCHAR}, 
+	   paid_amount =  #{paid_amount,jdbcType=NUMERIC} 
+	   -->
+
+ </update>
+ 
+ <select id="selectStudentInfo" parameterType="Student" resultType="Student">
+     select * from t_student st where st.app_info_code = #{app_info_code} and st.code = #{code} 
+ </select>
+ 
+ <update id="updateRegInfo" parameterType="Student"  >
+      update t_student 
+         <trim prefix="set" suffixOverrides=",">
+	         <if test="idcard_img != null">idcard_img = #{idcard_img},</if>
+			 <if test="face_img != null">face_img = #{face_img},</if>
+			 <if test="health_img != null">health_img = #{health_img},</if>
+			 <if test="protocol_img != null">protocol_img = #{protocol_img},</if>
+			 <if test="paid_amount != null">paid_amount = paid_amount+#{paid_amount},</if>
+             <if test="state != null">state = #{state},</if>  
+	     </trim>
+	      <where>
+	        code = #{code} 
+	        <if test="app_info_code != null">
+	           and app_info_code = #{app_info_code}
+	        </if>
+	        <if test="app_info_code == null and app_id != null">
+	           and app_info_code = (select app_info_code from t_app_info ai where ai.app_id = #{app_id})
+	        </if>
+	      </where>
+	      
+ </update>
+ 
+    <select id="selectClassifyStudents" parameterType="Student" resultType="Student">
+       select * from t_student st
+      <where>
+           app_info_code = #{app_info_code} 
+         <if test=" classify!= null and classify == 'cs' ">
+             and (state = 0 || state=1) 
+         </if>
+         
+         <if test="classify!= null and classify == 'sh' ">
+              and state = 2
+         </if>
+         
+          <if test="classify!= null and classify == 'yjf' ">
+               <!--  
+               		and  paid_amount > 0
+               -->
+              and st.paid_amount >= (
+                   SELECT price from t_license_type lt where lt.code = st.license_code and st.app_info_code = lt.app_info_code
+                )
+         </if>
+      </where>
+ </select>
+ 
+ <select id="selectPayments" parameterType="Payment" resultType="Payment">
+     <!--  select tp.*,ts.name from t_payment tp 
+		LEFT JOIN t_student ts ON (
+			ts.code = tp.student_code 
+		    and ts.app_info_code = tp.app_info_code
+		) where tp.app_info_code = #{app_info_code}
+		and tp.student_code = #{student_code}
+	    ORDER BY tp.pay_time -->
+	    select tp.openid as student_code,(tp.total_fee /100) as amount ,tp.nonce_str as nonceStr ,ts.name as name,tp.time_end as pay_time from t_payment tp 
+        left JOIN t_app_info ai on tp.appid = ai.app_id 
+		LEFT JOIN t_student ts ON (ts.code = tp.openid  and ts.app_info_code = ai.app_info_code) 
+        where ai.app_info_code = #{app_info_code}
+		  and tp.openid = #{student_code}
+	      ORDER BY tp.time_end
+ </select>
+ 
+ <insert id="addPayment" parameterType="Payment">
+    insert into t_payment
+    (app_info_code,student_code,amount,pay_time,prepay_id,nonceStr) 
+    values(#{app_info_code},#{student_code},#{amount},now(),#{prepay_id},#{nonceStr}) 
+ </insert>
+ 
+ 
+<insert id="addPaymentNotify" parameterType="Payment">
+    insert into t_payment(appid ,bank_type ,cash_fee ,fee_type ,is_subscribe ,mch_id ,nonce_str ,openid ,out_trade_no ,
+     result_code , return_code ,sign ,time_end ,total_fee ,trade_type ,transaction_id ) 
+     values(#{appid} ,#{bank_type} ,#{cash_fee} ,#{fee_type} ,#{is_subscribe} ,#{mch_id} ,#{nonce_str} ,#{openid} ,#{out_trade_no},
+     #{result_code}, #{return_code} ,#{sign} ,#{time_end} ,#{total_fee} ,#{trade_type} ,#{transaction_id} ) 
+ </insert>
+ 
+  
+  
+</mapper>

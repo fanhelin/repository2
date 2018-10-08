@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.mapper.score.ScoreMapper">
+
+   <select id="findScoreTotal" parameterType="Map" resultType ="int" >
+    select count(1) from t_exchange_order ed
+	<where>
+	     1=1
+	    <if test="startTime != null and startTime !=''">
+	         and ed.order_date &gt;= #{startTime}
+	    </if>
+	    <if test="endTime != null and endTime !=''">
+	         and ed.order_date &lt; #{endTime}
+	    </if>
+	    <if test="mobile != null and mobile !=''">
+	         and ed.mobile = #{mobile}
+	    </if>
+	    <if test="address != null and address !=''">
+	         and ed.address = #{address}
+	    </if>
+	    <if test="orderState != null and orderState !=''">
+	         and ed.state = #{orderState}
+	    </if>
+	</where>
+   </select> 
+  
+  <select id="findScoreList" parameterType="Map" resultType ="Score" >
+    select * from t_exchange_order ed
+	<where>
+	     1=1
+	    <if test="startTime != null and startTime !=''">
+	         and ed.order_date &gt;= #{startTime}
+	    </if>
+	    <if test="endTime != null and endTime !=''">
+	         and ed.order_date &lt; #{endTime}
+	    </if>
+	    <if test="mobile != null and mobile !=''">
+	         and ed.mobile = #{mobile}
+	    </if>
+	    <if test="address != null and address !=''">
+	         and ed.address = #{address}
+	    </if>
+	    <if test="orderState != null and orderState !=''">
+	         and ed.state = #{orderState}
+	    </if>
+	    limit #{currentLine},#{rows}
+	</where>
+   
+  </select> 
+  
+  <update id="updateScoreState" parameterType="Score" >
+     update t_exchange_order 
+     set 
+     state= #{state},
+     handle_date=now()
+     where code = #{code}
+  </update>
+  
+    
+  <insert id="addExchangeOrder" parameterType="Score"  >
+    insert into t_exchange_order(app_info_code,code ,openid ,com_code , state, order_date, mobile, address ,score,rcv_name )
+    values(
+          #{app_info_code} ,
+	      #{code} ,
+	      #{openid},
+	      #{com_code} , 
+	      '0',
+	      now(),
+	      #{mobile}, 
+	      #{address} ,
+	      #{score} , 
+	      #{rcv_name}
+    )
+  </insert>
+  
+   <select id="loadHisExs" parameterType="Score" resultType ="Score" >
+    select ed.* ,ci.des as com_des,ci.fu_img,ci.`name` as com_name,ci.price as price ,ci.title as com_title 
+    from (SELECT * from t_exchange_order 
+           <where>
+                 1=1 
+               <if test="openid != null">
+                   and openid = #{openid}
+               </if>
+           </where> 
+           )ed 
+       LEFT JOIN t_commodity_info ci on ed.com_code = ci.`code`
+   
+  </select> 
+
+  
+  
+</mapper>
